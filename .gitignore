@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Xcode: datos por usuario (estado de ventanas, breakpoints, esquemas personales)
+xcuserdata/
+*.xcuserstate
+
+# Build
+DerivedData/
+build/
