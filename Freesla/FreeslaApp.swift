@@ -9,11 +9,9 @@ import SwiftUI
 
 @main
 struct FreeslaApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    
     var body: some Scene {
-        // Ventana de Hello World! Quitar cuando no haga falta saber si compila bien
-        WindowGroup {
-            ContentView()
-        }
         
         MenuBarExtra("Freesla", systemImage: "capsule.fill") {
             // Contenido del menú
