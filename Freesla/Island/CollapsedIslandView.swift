@@ -3,6 +3,7 @@
 //  Freesla
 //
 //  Isla contraída: a la izquierda del notch las barras de música, a la derecha el agente.
+//  En monitores sin notch, la hora del sistema va centrada.
 //
 
 import SwiftUI
@@ -11,9 +12,17 @@ struct CollapsedIslandView: View {
     @Environment(IslandModel.self) private var model
 
     var body: some View {
+        ZStack {
+            ears
+            if !model.hasNotch { ClockView() }
+        }
+        .frame(height: model.notchSize.height)
+    }
+
+    private var ears: some View {
         HStack(spacing: 0) {
             ZStack {
-                if let info = model.nowPlaying.info {
+                if model.showsMusicEar, let info = model.nowPlaying.info {
                     MusicBarsView(isPlaying: info.isPlaying, height: 13)
                         .transition(.scale.combined(with: .opacity))
                 }
@@ -30,7 +39,17 @@ struct CollapsedIslandView: View {
             }
             .frame(width: model.earWidth)
         }
-        .frame(height: model.notchSize.height)
+    }
+}
+
+/// Hora del sistema (respeta el formato 12/24 h de macOS); se actualiza cada minuto.
+struct ClockView: View {
+    var body: some View {
+        TimelineView(.everyMinute) { context in
+            Text(context.date.formatted(date: .omitted, time: .shortened))
+                .font(.system(size: 12, weight: .semibold))
+                .monospacedDigit()
+        }
     }
 }
 

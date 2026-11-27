@@ -5,11 +5,13 @@
 //  Created by Samuel Gómez Gutiérrez on 01/11/2026.
 //
 
+import ServiceManagement
 import SwiftUI
 
 @main
 struct FreeslaApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     
     var body: some Scene {
         
@@ -23,7 +25,14 @@ struct FreeslaApp: App {
             Button("Vaciar estante", systemImage: "trash") {
                 appDelegate.model.shelf.clear()
             }
-            Toggle("Refracción del cristal", isOn: Bindable(appDelegate.model.backdrop).isEnabled)
+            Toggle("Abrir al iniciar sesión", isOn: $launchAtLogin)
+                .onChange(of: launchAtLogin) { _, enabled in
+                    do {
+                        if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+                    } catch {
+                        launchAtLogin = SMAppService.mainApp.status == .enabled // no se pudo: volvemos al estado real
+                    }
+                }
             Divider()
             // sender nil (null) porque no importa; atajo ⌘Q (solo con el menú abierto: la app es agent)
             Button("Salir", systemImage: "power") {

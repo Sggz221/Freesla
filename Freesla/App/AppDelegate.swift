@@ -38,11 +38,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             model.expand()
         }
         self.panel = panel
-        // La captura del fondo (para la refracción del cristal) solo corre con la isla expandida.
-        model.onExpansionChange = { [weak self] expanded in
-            guard let self else { return }
-            if expanded, let panel = self.panel { model.backdrop.start(panel: panel) } else { model.backdrop.stop() }
-        }
         place(on: NSScreen.main ?? NSScreen.screens.first)
         panel.orderFrontRegardless() // mostrar sin activar la app ni robar el foco
 
@@ -95,14 +90,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func place(on screen: NSScreen?) {
         guard let screen, let panel else { return }
         model.notchSize = screen.notchSize
+        model.hasNotch = screen.hasNotch
         panel.move(to: screen)
-        if model.isExpanded { model.backdrop.start(panel: panel) } // la captura sigue a la pantalla
     }
 
     /// Rectángulo de la isla en coordenadas de pantalla (Y hacia arriba), centrado arriba del panel.
     private func islandRect(in panelFrame: NSRect) -> NSRect {
         let size = model.currentSize
-        let width = size.width + 2 * IslandModel.shoulder
+        let width = size.width + 2 * model.shoulder
         return NSRect(x: panelFrame.midX - width / 2, y: panelFrame.maxY - size.height, width: width, height: size.height)
     }
 
